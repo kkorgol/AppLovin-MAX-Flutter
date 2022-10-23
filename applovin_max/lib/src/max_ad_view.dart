@@ -60,6 +60,41 @@ class MaxAdView extends StatefulWidget {
   /// @nodoc
   @override
   State<MaxAdView> createState() => _MaxAdViewState();
+
+  double getWidth() {
+    if (adFormat == AdFormat.mrec) {
+      return _mrecWidth;
+    } else if (adFormat == AdFormat.banner) {
+      return isTablet() ? _leaderWidth : _bannerWidth;
+    }
+
+    return -1;
+  }
+
+  double getHeight() {
+    if (adFormat == AdFormat.mrec) {
+      return _mrecHeight;
+    } else if (adFormat == AdFormat.banner) {
+      return isTablet() ? _leaderHeight : _bannerHeight;
+    }
+
+    return -1;
+  }
+
+  bool isTablet() {
+    final double devicePixelRatio = ui.window.devicePixelRatio;
+    final ui.Size size = ui.window.physicalSize;
+    final double width = size.width;
+    final double height = size.height;
+
+    if (devicePixelRatio < 2 && (width >= 1000 || height >= 1000)) {
+      return true;
+    } else if (devicePixelRatio == 2 && (width >= 1920 || height >= 1920)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 class _MaxAdViewState extends State<MaxAdView> {
@@ -67,8 +102,8 @@ class _MaxAdViewState extends State<MaxAdView> {
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return SizedBox(
-        width: _getWidth(),
-        height: _getHeight(),
+        width: widget.getWidth(),
+        height: widget.getHeight(),
         child: OverflowBox(
           alignment: Alignment.bottomCenter,
           child: AndroidView(
@@ -84,8 +119,8 @@ class _MaxAdViewState extends State<MaxAdView> {
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return SizedBox(
-        width: _getWidth(),
-        height: _getHeight(),
+        width: widget.getWidth(),
+        height: widget.getHeight(),
         child: OverflowBox(
           alignment: Alignment.bottomCenter,
           child: UiKitView(
@@ -128,40 +163,5 @@ class _MaxAdViewState extends State<MaxAdView> {
         widget.listener?.onAdRevenuePaidCallback?.call(AppLovinMAX.createAd(adUnitId, arguments));
       }
     });
-  }
-
-  double _getWidth() {
-    if (widget.adFormat == AdFormat.mrec) {
-      return _mrecWidth;
-    } else if (widget.adFormat == AdFormat.banner) {
-      return _isTablet() ? _leaderWidth : _bannerWidth;
-    }
-
-    return -1;
-  }
-
-  double _getHeight() {
-    if (widget.adFormat == AdFormat.mrec) {
-      return _mrecHeight;
-    } else if (widget.adFormat == AdFormat.banner) {
-      return _isTablet() ? _leaderHeight : _bannerHeight;
-    }
-
-    return -1;
-  }
-
-  bool _isTablet() {
-    final double devicePixelRatio = ui.window.devicePixelRatio;
-    final ui.Size size = ui.window.physicalSize;
-    final double width = size.width;
-    final double height = size.height;
-
-    if (devicePixelRatio < 2 && (width >= 1000 || height >= 1000)) {
-      return true;
-    } else if (devicePixelRatio == 2 && (width >= 1920 || height >= 1920)) {
-      return true;
-    } else {
-      return false;
-    }
   }
 }
